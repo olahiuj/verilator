@@ -30,6 +30,7 @@
 
 #include "V3Dfg.h"
 #include "V3DfgPasses.h"
+#include "Timer.h"
 
 VL_DEFINE_DEBUG_FUNCTIONS;
 
@@ -589,6 +590,9 @@ class AstToDfgVisitor final : public VNVisitor {
     explicit AstToDfgVisitor(AstModule& module, V3DfgOptimizationContext& ctx)
         : m_dfgp{new DfgGraph{module, module.name()}}
         , m_ctx{ctx} {
+
+        qihe::Timer timer(__PRETTY_FUNCTION__);
+            
         // Build the DFG
         iterateChildren(&module);
         UASSERT_OBJ(m_uncommittedVertices.empty(), &module, "Uncommitted vertices remain");
@@ -596,6 +600,8 @@ class AstToDfgVisitor final : public VNVisitor {
         // Canonicalize variables
         canonicalizePacked();
         canonicalizeArray();
+
+        timer.tick();
     }
 
 public:
