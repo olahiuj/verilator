@@ -40,6 +40,7 @@
 #include "V3SenTree.h"
 #include "V3SplitVar.h"
 #include "V3Stats.h"
+#include "Timer.h"
 
 #include <tuple>
 #include <unordered_map>
@@ -395,11 +396,16 @@ LogicByScope breakCycles(AstNetlist* netlistp, const LogicByScope& combinational
     // Build the dataflow (dependency) graph
     const std::unique_ptr<Graph> graphp = buildGraph(combinationalLogic);
 
+    qihe::Timer timer(__PRETTY_FUNCTION__);
+
     // Remove nodes that don't form part of a cycle
     removeNonCyclic(graphp.get());
 
     // Nothing to do if no cycles, yay!
-    if (graphp->empty()) return LogicByScope{};
+    if (graphp->empty()) {
+        timer.tick();
+        return LogicByScope{};
+    }
 
     // Dump for debug
     if (dumpGraphLevel() >= 6) graphp->dumpDotFilePrefixed("sched-comb-cycles");
@@ -418,6 +424,8 @@ LogicByScope breakCycles(AstNetlist* netlistp, const LogicByScope& combinational
 
     // Report warnings/diagnostics
     reportCycles(graphp.get(), cutVertices);
+
+    timer.tick();
 
     // Fix cuts by converting dependent logic to use hybrid sensitivities
     return fixCuts(netlistp, cutVertices);
