@@ -18,8 +18,10 @@ struct Timer {
     void tick() {
         auto now = std::chrono::steady_clock::now();
         const std::chrono::duration<double, std::milli> duration = now - current_time;
-        std::cout << func_name_ << ": "
-                  << duration.count() << std::endl;
+        std::cout << "qihe time tracking:: "
+				  << func_name_ << "@@"
+                  << duration.count()
+				  << " ms" << std::endl;
         current_time = now;
     }
 
