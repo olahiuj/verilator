@@ -32,6 +32,7 @@
 
 #include "V3Const.h"
 #include "V3Graph.h"
+#include "Timer.h"
 
 #include <unordered_map>
 
@@ -337,9 +338,11 @@ class ActiveLatchCheckVisitor final : public VNVisitorConst {
 public:
     // CONSTRUCTORS
     ActiveLatchCheckVisitor(AstNode* nodep, bool expectLatch) {
+        qihe::Timer timer(__PRETTY_FUNCTION__);
         m_graph.begin();
         iterateConst(nodep);
         m_graph.latchCheck(nodep, expectLatch);
+        timer.tick();
     }
     ~ActiveLatchCheckVisitor() override = default;
 };
