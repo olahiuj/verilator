@@ -34,6 +34,7 @@
 #include "V3String.h"
 #include "V3UniqueNames.h"
 #include "V3Width.h"
+#include "Timer.h"
 
 #include <algorithm>
 #include <memory>
@@ -3853,9 +3854,12 @@ public:
     }
 
     AstNode* mainAcceptEdit(AstNode* nodep) {
+        qihe::Timer timer(__PRETTY_FUNCTION__);
         VIsCached::clearCacheTree();  // Avoid using any stale isPure
         // Operate starting at a random place
-        return iterateSubtreeReturnEdits(nodep);
+        AstNode *result = iterateSubtreeReturnEdits(nodep);
+        timer.tick();
+        return result;
     }
 };
 
