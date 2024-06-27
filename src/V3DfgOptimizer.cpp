@@ -265,6 +265,16 @@ void V3DfgOptimizer::optimize(AstNetlist* netlistp, const string& label) {
         const std::unique_ptr<DfgGraph> dfg{V3DfgPasses::astToDfg(*modp, ctx)};
         if (dumpDfgLevel() >= 8) dfg->dumpDotFilePrefixed(ctx.prefix() + "whole-input");
 
+        int nEdges = 0;
+        dfg->forEachVertex([&](const DfgVertex& vtx) {
+            vtx.forEachSourceEdge([&](const DfgEdge& edge, size_t idx) {  //
+                if (edge.sourcep()) { nEdges++; }
+            });
+        });
+
+        std::cout << "qihe::Dfg-statistics module@" << ctx.prefix() << dfg->name()
+                  << " " << dfg->size() << " nodes " << nEdges << " edges" << std::endl;
+
         // Extract the cyclic sub-graphs. We do this because a lot of the optimizations assume a
         // DAG, and large, mostly acyclic graphs could not be optimized due to the presence of
         // small cycles.
